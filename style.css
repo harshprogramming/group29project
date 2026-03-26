@@ -1,3 +1,10 @@
+@font-face {
+    font-family: 'Pacifico';
+    src: url('Pacifico-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -12,6 +19,10 @@ body {
     justify-content: center;
     align-items: center;
     color: #222;
+}
+
+.home-box h1 {
+    font-family: 'Pacifico', cursive;
 }
 
 .container {
