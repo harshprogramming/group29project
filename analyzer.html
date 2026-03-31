@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - Mood Tracker</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<div class="container-summary">
+    <h1>Dashboard Overview</h1>
+    <p>Visualize your mood trends and emotional patterns</p>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h4>Total Entries</h4>
+            <p id="totalEntries">24</p>
+        </div>
+        <div class="stat-card">
+            <h4>Avg Mood Level</h4>
+            <p id="avgMood">7.2</p>
+        </div>
+        <div class="stat-card">
+            <h4>Avg Stress Level</h4>
+            <p id="avgStress">4.5</p>
+        </div>
+        <div class="stat-card">
+            <h4>Avg Intensity</h4>
+            <p id="avgIntensity">6.0</p>
+        </div>
+    </div>
+
+    <div class="chart-section">
+        <h3>📈 Mood & Stress Trend</h3>
+        <canvas id="trendChart"></canvas>
+    </div>
+
+    <div class="chart-section">
+        <h3>📊 Top Emotions</h3>
+        <canvas id="emotionChart"></canvas>
+    </div>
+
+    <div class="section">
+        <h3>😊 Top Activities</h3>
+        <div class="list-items" id="topActivities">
+            <div>Reading</div>
+            <div>Walking</div>
+            <div>Yoga</div>
+        </div>
+    </div>
+    <div class="link-text">
+        <a href="home.html">Back to Home</a>
+    </div>
+</div>
+
+<script src="js/dashboard.js"></script>
+</body>
+</html>
