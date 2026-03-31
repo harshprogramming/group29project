@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mood Entry</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+    <h1>Record Your Mood</h1>
+    <p>Track your mood and stress levels daily</p>
+
+    <form id="moodForm">
+
+        <div class="form-group">
+            <label for="intensity">Mood Intensity (1-10):</label>
+            <input type="number" id="intensity" min="1" max="10" required>
+        </div>
+
+        <div class="form-group">
+            <label for="stress">Stress Level (1-10):</label>
+            <input type="number" id="stress" min="1" max="10" required>
+        </div>
+
+        <div class="form-group">
+            <label for="mood_level">Type of Mood:</label>
+            <select id="mood_level" required>
+                <option value="">--Select--</option>
+                <option value="happy">Happy</option>
+                <option value="sad">Sad</option>
+                <option value="stressed">Stressed</option>
+                <option value="angry">Angry</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="note">Note:</label>
+            <textarea id="note" rows="3" placeholder="Optional note..."></textarea>
+        </div>
+
+        <button type="submit">Save Mood</button>
+    </form>
+
+    <div class="link-text">
+        <a href="home.html">Back to Home</a>
+    </div>
+</div>
+
+<script>
+document.getElementById("moodForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const entry_id = Date.now();
+    const user_id = 1; // TODO: 替换为登录用户 ID
+    const date = new Date().toISOString().split('T')[0];
+    const time = new Date().toISOString().split('T')[1].split('.')[0];
+
+    const intensity = document.getElementById("intensity").value;
+    const stress_level = document.getElementById("stress").value;
+    const mood_level = document.getElementById("mood_level").value;
+    const note = document.getElementById("note").value;
+
+    if (!intensity || !stress_level || !mood_level) {
+        alert("Please fill all required fields");
+        return;
+    }
+
+    try {
+        const res = await fetch("http://localhost/mood-tracker-backend/public/index.php/moods", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                entry_id,
+                user_id,
+                date,
+                time,
+                intensity,
+                stress_level,
+                mood_level,
+                note
+            })
+        });
+
+        const text = await res.text();
+        alert("Mood Entry Saved: " + text);
+
+        document.getElementById("moodForm").reset();
+
+    } catch (err) {
+        alert("Error: " + err);
+    }
+});
+</script>
+
+</body>
+</html>
