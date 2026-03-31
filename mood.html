@@ -47,53 +47,5 @@
     </div>
 </div>
 
-<script>
-document.getElementById("moodForm").addEventListener("submit", async function(e) {
-    e.preventDefault();
-
-    const entry_id = Date.now();
-    const user_id = 1; // TODO: 替换为登录用户 ID
-    const date = new Date().toISOString().split('T')[0];
-    const time = new Date().toISOString().split('T')[1].split('.')[0];
-
-    const intensity = document.getElementById("intensity").value;
-    const stress_level = document.getElementById("stress").value;
-    const mood_level = document.getElementById("mood_level").value;
-    const note = document.getElementById("note").value;
-
-    if (!intensity || !stress_level || !mood_level) {
-        alert("Please fill all required fields");
-        return;
-    }
-
-    try {
-        const res = await fetch("http://localhost/mood-tracker-backend/public/index.php/moods", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                entry_id,
-                user_id,
-                date,
-                time,
-                intensity,
-                stress_level,
-                mood_level,
-                note
-            })
-        });
-
-        const text = await res.text();
-        alert("Mood Entry Saved: " + text);
-
-        document.getElementById("moodForm").reset();
-
-    } catch (err) {
-        alert("Error: " + err);
-    }
-});
-</script>
-
 </body>
 </html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Activities</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container-mood">
+    <h1>Record Your Activity</h1>
+    
+    <form id="activityForm">
+
+        <div class="form-group">
+            <label for="activity">Activity:</label>
+            <input type="text" id="activity" placeholder="Enter your activity" required>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="duration">Duration (minutes):</label>
+            <input type="number" id="duration" required min="1">
+        </div>
+
+        <div class="form-group">
+            <label for="mood_level">Mood Level (1-10):</label>
+            <input type="number" id="mood_level" min="1" max="10" value="6" required>
+        </div>
+
+        <div class="form-group">
+            <label for="stress_level">Stress Level (1-10):</label>
+            <input type="number" id="stress_level" min="1" max="10" value="4" required>
+        </div>
+
+        <button type="submit">Save Activity</button>
+    </form>
+
+    <div class="link-text">
+        <a href="home.html">Back to Home</a>
+    </div>
+</div>
+
+
+</body>
+</html>
