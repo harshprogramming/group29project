@@ -2,50 +2,106 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Mood Entry</title>
+    <title>Record Mood</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="container-mood">
+<div class="container-features">
     <h1>Record Your Mood</h1>
-    <p>Track your mood and stress levels daily</p>
 
     <form id="moodForm">
-
         <div class="form-group">
-            <label for="intensity">Mood Intensity (1-10):</label>
-            <input type="number" id="intensity" min="1" max="10" required>
+            <label>Date</label>
+            <input type="date" id="date" required>
         </div>
 
         <div class="form-group">
-            <label for="stress">Stress Level (1-10):</label>
-            <input type="number" id="stress" min="1" max="10" required>
+            <label>Time</label>
+            <input type="time" id="time" required>
         </div>
 
         <div class="form-group">
-            <label for="mood_level">Type of Mood:</label>
-            <select id="mood_level" required>
-                <option value="">--Select--</option>
-                <option value="happy">Happy</option>
-                <option value="sad">Sad</option>
-                <option value="stressed">Stressed</option>
-                <option value="angry">Angry</option>
-            </select>
+            <label>Intensity (1-10)</label>
+            <input type="number" id="intensity" min="1" max="10" value="5" required>
         </div>
 
         <div class="form-group">
-            <label for="note">Note:</label>
-            <textarea id="note" rows="3" placeholder="Optional note..."></textarea>
+            <label>Stress Level (1-10)</label>
+            <input type="number" id="stress_level" min="1" max="10" value="5" required>
         </div>
 
-        <button type="submit">Save Mood</button>
+        <div class="form-group">
+            <label>Mood Level (1-10)</label>
+            <input type="number" id="mood_level" min="1" max="10" value="5" required>
+        </div>
+
+        <div class="form-group">
+            <label>Note</label>
+            <textarea id="note" rows="3" placeholder="Write your feelings..."></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Emotions (select all that apply)</label>
+            <div id="emotion_ids" class="checkbox-section">
+                <label><input type="checkbox" name="emotion_ids" value="1"> Happy</label>
+                <label><input type="checkbox" name="emotion_ids" value="2"> Sad</label>
+                <label><input type="checkbox" name="emotion_ids" value="3"> Anxious</label>
+                <label><input type="checkbox" name="emotion_ids" value="4"> Calm</label>
+                <label><input type="checkbox" name="emotion_ids" value="5"> Angry</label>
+                <label><input type="checkbox" name="emotion_ids" value="6"> Overwhelmed</label>
+                <label><input type="checkbox" name="emotion_ids" value="7"> Tired</label>
+                <label><input type="checkbox" name="emotion_ids" value="8"> Motivated</label>
+                <div class="other-input">
+                    <span>Other:</span>
+                    <input type="text" id="emotion_other" placeholder="Describe your emotion...">
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Stress Factors (select all that apply)</label>
+            <div id="stress_factor_ids" class="checkbox-section">
+                <label><input type="checkbox" name="stress_factor_ids" value="1"> School</label>
+                <label><input type="checkbox" name="stress_factor_ids" value="2"> Work</label>
+                <label><input type="checkbox" name="stress_factor_ids" value="3"> Money</label>
+                <label><input type="checkbox" name="stress_factor_ids" value="4"> Family</label>
+                <label><input type="checkbox" name="stress_factor_ids" value="5"> Health</label>
+                <label><input type="checkbox" name="stress_factor_ids" value="6"> Exams</label>
+                <label><input type="checkbox" name="stress_factor_ids" value="7"> Relationships</label>
+                <label><input type="checkbox" name="stress_factor_ids" value="8"> Deadlines</label>
+                <div class="other-input">
+                    <span>Other:</span>
+                    <input type="text" id="stress_factor_other" placeholder="Describe your stress factor...">
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Activities (select all that apply)</label>
+            <div id="activity_ids" class="checkbox-section">
+                <label><input type="checkbox" name="activity_ids" value="1"> Gym</label>
+                <label><input type="checkbox" name="activity_ids" value="2"> Reading</label>
+                <label><input type="checkbox" name="activity_ids" value="3"> Gaming</label>
+                <label><input type="checkbox" name="activity_ids" value="4"> Walking</label>
+                <label><input type="checkbox" name="activity_ids" value="5"> Meditation</label>
+                <label><input type="checkbox" name="activity_ids" value="6"> Sleeping</label>
+                <label><input type="checkbox" name="activity_ids" value="7"> Music</label>
+                <label><input type="checkbox" name="activity_ids" value="8"> Talking to Friends</label>
+                <div class="other-input">
+                    <span>Other:</span>
+                    <input type="text" id="activity_other" placeholder="Describe your activity...">
+                </div>
+            </div>
+        </div>
+
+        <button type="submit">Save</button>
     </form>
-
     <div class="link-text">
         <a href="home.html">Back to Home</a>
     </div>
 </div>
 
+<script src="js/mood.js"></script>
 </body>
 </html>

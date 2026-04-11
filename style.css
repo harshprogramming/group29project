@@ -63,6 +63,50 @@ input, select, textarea {
     font-size: 14px;
 }
 
+input[type="checkbox"] {
+    width: auto;
+    padding: 0;
+    margin-right: 6px;
+    vertical-align: middle;
+}
+
+.checkbox-section {
+    border: 1.5px solid #c7d2fe;
+    border-radius: 10px;
+    padding: 12px 14px;
+    background: #f5f3ff;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.checkbox-section label {
+    font-weight: normal;
+    margin-bottom: 0;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.checkbox-section .other-input {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.checkbox-section .other-input span {
+    white-space: nowrap;
+    font-size: 14px;
+    color: #444;
+}
+
+.checkbox-section .other-input input[type="text"] {
+    flex: 1;
+    padding: 6px 10px;
+    font-size: 14px;
+}
+
 button {
     width: 100%;
     padding: 12px;
@@ -92,7 +136,7 @@ button:hover {
 
 .home-box {
     background: white;
-    width: 700px;
+    width: 800px;
     padding: 35px;
     border-radius: 18px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
@@ -137,16 +181,127 @@ button:hover {
     background: #dc2626 !important;
 }
 
-.container-mood {
+.container-features {
     background: white;
-    width: 380px;
+    width: 540px;
     padding: 30px;
     border-radius: 16px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
 }
-.container-mood h1 {
+.container-features h1 {
     font-family: 'Pacifico', cursive;
     text-align: center;
     margin-bottom: 10px;
     color: #4f46e5;
+}
+
+/* ── Dashboard / Analyzer ── */
+.dashboard-wrapper {
+    width: 700px;
+    padding: 30px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.dashboard-title {
+    font-family: 'Pacifico', cursive;
+    color: #4f46e5;
+    text-align: center;
+    margin-bottom: 4px;
+}
+
+.dashboard-subtitle {
+    text-align: center;
+    color: #666;
+    margin-bottom: 4px;
+}
+
+.dashboard-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    padding: 24px 28px;
+}
+
+.card-title {
+    color: #4f46e5;
+    margin-bottom: 16px;
+    font-size: 1.05rem;
+}
+
+/* Stats grid inside box 1 */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+}
+
+.stat-card {
+    background: #f5f3ff;
+    border: 1.5px solid #c7d2fe;
+    border-radius: 12px;
+    padding: 16px 12px;
+    text-align: center;
+}
+
+.stat-card h4 {
+    font-size: 0.8rem;
+    color: #6b7280;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.stat-card p {
+    font-size: 1.6rem;
+    font-weight: bold;
+    color: #4f46e5;
+}
+
+/* Constrain doughnut chart so it doesn't fill full width */
+.chart-constrain {
+    max-width: 340px;
+    margin: 0 auto;
+}
+
+/* Box 5 — activities / recommendations / insight */
+.info-section {
+    padding-bottom: 18px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.info-section:last-child {
+    padding-bottom: 0;
+    margin-bottom: 0;
+    border-bottom: none;
+}
+
+.list-items {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.list-items div {
+    background: #f5f3ff;
+    border: 1px solid #c7d2fe;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 0.92rem;
+    color: #374151;
+}
+
+.list-items div strong {
+    color: #4f46e5;
+}
+
+.insight-text {
+    background: #f5f3ff;
+    border-left: 4px solid #4f46e5;
+    border-radius: 0 8px 8px 0;
+    padding: 12px 16px;
+    color: #374151;
+    line-height: 1.6;
+    font-size: 0.95rem;
 }

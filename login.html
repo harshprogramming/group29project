@@ -11,7 +11,7 @@
         <h1>Sign In</h1>
         <p>Welcome back to your Mood Tracker</p>
 
-        <form action="login.php" method="POST">
+        <form id="loginForm">
             <div class="form-group">
                 <label for="email">Email</label>
                 <input type="email" id="email" name="email" required>
@@ -22,6 +22,8 @@
                 <input type="password" id="password" name="password" required>
             </div>
 
+            <p id="loginError" style="color:red;font-size:0.9em;"></p>
+
             <button type="submit">Sign In</button>
         </form>
 
@@ -29,5 +31,6 @@
             Don't have an account? <a href="register.html">Register</a>
         </div>
     </div>
+    <script src="js/login.js"></script>
 </body>
 </html>

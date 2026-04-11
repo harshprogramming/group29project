@@ -1,9 +1,18 @@
 document.getElementById('moodForm').addEventListener('submit', async function (e) {
     e.preventDefault();
 
-    const getSelectedValues = (id) =>
-        Array.from(document.getElementById(id).selectedOptions)
+    const getCheckedValues = (name) =>
+        Array.from(document.querySelectorAll(`input[name="${name}"]:checked`))
             .map(el => parseInt(el.value));
+
+    const otherParts = [
+        document.getElementById('emotion_other').value.trim()       && 'Other emotion: '        + document.getElementById('emotion_other').value.trim(),
+        document.getElementById('stress_factor_other').value.trim() && 'Other stress factor: '  + document.getElementById('stress_factor_other').value.trim(),
+        document.getElementById('activity_other').value.trim()      && 'Other activity: '       + document.getElementById('activity_other').value.trim(),
+    ].filter(Boolean);
+
+    const baseNote = document.getElementById('note').value.trim();
+    const note = [baseNote, ...otherParts].filter(Boolean).join('\n') || null;
 
     const payload = {
         date: document.getElementById('date').value,
@@ -11,10 +20,10 @@ document.getElementById('moodForm').addEventListener('submit', async function (e
         intensity: parseInt(document.getElementById('intensity').value),
         stress_level: parseInt(document.getElementById('stress_level').value),
         mood_level: parseInt(document.getElementById('mood_level').value),
-        note: document.getElementById('note').value.trim() || null,
-        emotion_ids: getSelectedValues('emotion_ids'),
-        stress_factor_ids: getSelectedValues('stress_factor_ids'),
-        activity_ids: getSelectedValues('activity_ids'),
+        note,
+        emotion_ids: getCheckedValues('emotion_ids'),
+        stress_factor_ids: getCheckedValues('stress_factor_ids'),
+        activity_ids: getCheckedValues('activity_ids'),
     };
 
     try {

@@ -8,47 +8,69 @@
 </head>
 <body>
 
-<div class="container-summary">
-    <h1>Dashboard Overview</h1>
-    <p>Visualize your mood trends and emotional patterns</p>
+<div class="dashboard-wrapper">
+    <h1 class="dashboard-title">Dashboard Overview</h1>
+    <p class="dashboard-subtitle">Visualize your mood trends and emotional patterns</p>
 
-    <div class="stats-grid">
-        <div class="stat-card">
-            <h4>Total Entries</h4>
-            <p id="totalEntries">24</p>
-        </div>
-        <div class="stat-card">
-            <h4>Avg Mood Level</h4>
-            <p id="avgMood">7.2</p>
-        </div>
-        <div class="stat-card">
-            <h4>Avg Stress Level</h4>
-            <p id="avgStress">4.5</p>
-        </div>
-        <div class="stat-card">
-            <h4>Avg Intensity</h4>
-            <p id="avgIntensity">6.0</p>
+    <!-- Box 1: Stats -->
+    <div class="dashboard-card">
+        <h3 class="card-title">📊 Summary</h3>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h4>Total Entries</h4>
+                <p id="totalEntries">—</p>
+            </div>
+            <div class="stat-card">
+                <h4>Avg Mood Level</h4>
+                <p id="avgMood">—</p>
+            </div>
+            <div class="stat-card">
+                <h4>Avg Stress Level</h4>
+                <p id="avgStress">—</p>
+            </div>
+            <div class="stat-card">
+                <h4>Avg Intensity</h4>
+                <p id="avgIntensity">—</p>
+            </div>
         </div>
     </div>
 
-    <div class="chart-section">
-        <h3>📈 Mood & Stress Trend</h3>
+    <!-- Box 2: Trend Chart -->
+    <div class="dashboard-card">
+        <h3 class="card-title">📈 Mood & Stress Trend</h3>
         <canvas id="trendChart"></canvas>
     </div>
 
-    <div class="chart-section">
-        <h3>📊 Top Emotions</h3>
-        <canvas id="emotionChart"></canvas>
-    </div>
-
-    <div class="section">
-        <h3>😊 Top Activities</h3>
-        <div class="list-items" id="topActivities">
-            <div>Reading</div>
-            <div>Walking</div>
-            <div>Yoga</div>
+    <!-- Box 3: Top Emotions -->
+    <div class="dashboard-card">
+        <h3 class="card-title">😊 Top Emotions</h3>
+        <div class="chart-constrain">
+            <canvas id="emotionChart"></canvas>
         </div>
     </div>
+
+    <!-- Box 4: Top Stress Factors -->
+    <div class="dashboard-card">
+        <h3 class="card-title">⚡ Top Stress Factors</h3>
+        <canvas id="stressorChart"></canvas>
+    </div>
+
+    <!-- Box 5: Activities + Recommendations + Insight -->
+    <div class="dashboard-card">
+        <div class="info-section">
+            <h3 class="card-title">🏃 Best Activities</h3>
+            <div class="list-items" id="topActivities">—</div>
+        </div>
+        <div class="info-section">
+            <h3 class="card-title">💡 Recommendations</h3>
+            <div class="list-items" id="recommendations">—</div>
+        </div>
+        <div class="info-section">
+            <h3 class="card-title">🔍 Insight</h3>
+            <p class="insight-text" id="insightText">—</p>
+        </div>
+    </div>
+
     <div class="link-text">
         <a href="home.html">Back to Home</a>
     </div>

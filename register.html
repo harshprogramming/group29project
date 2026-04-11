@@ -11,7 +11,7 @@
         <h1>Register</h1>
         <p>Create your Mood Tracker account</p>
 
-        <form action="register.php" method="POST">
+        <form id="registerForm">
             <div class="form-group">
                 <label for="name">Full Name</label>
                 <input type="text" id="name" name="name" required>
@@ -47,6 +47,8 @@
                 <input type="password" id="password" name="password" required>
             </div>
 
+            <p id="registerError" style="color:red;font-size:0.9em;"></p>
+
             <button type="submit">Register</button>
         </form>
 
@@ -54,5 +56,6 @@
             Already have an account? <a href="login.html">Sign In</a>
         </div>
     </div>
+    <script src="js/register.js"></script>
 </body>
 </html>

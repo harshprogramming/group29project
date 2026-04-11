@@ -21,10 +21,20 @@
 
         <div class="nav-buttons">
             <a href="mood.html">Mood Entry</a>
-            <a href="#">Activities</a>
-            <a href="#">Analyzer</a>
-            <a href="login.html" class="logout">Logout</a>
+            <a href="activities.html">Activities</a>
+            <a href="analyzer.html">Analyzer</a>
+            <a href="#" id="logoutBtn" class="logout">Logout</a>
         </div>
     </div>
+    <script>
+        document.getElementById('logoutBtn').addEventListener('click', async function (e) {
+            e.preventDefault();
+            await fetch('http://localhost:8000/api/auth/logout', {
+                method: 'POST',
+                credentials: 'include',
+            });
+            window.location.href = 'login.html';
+        });
+    </script>
 </body>
 </html>
