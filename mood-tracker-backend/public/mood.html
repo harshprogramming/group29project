@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mood Entry - Mood Tracker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container-mood">
+        <h1>Mood Entry</h1>
+        <p>Fill out your mood details below.</p>
+
+        <form id="moodForm" novalidate>
+            <div class="form-group">
+                <label for="date">Date</label>
+                <input type="date" id="date" name="date" required>
+            </div>
+
+            <div class="form-group">
+                <label for="time">Time</label>
+                <input type="time" id="time" name="time" required>
+            </div>
+
+            <div class="form-group">
+                <label for="stressLevel">Stress Level</label>
+                <select id="stressLevel" name="stress_level" required>
+                    <option value="">Select stress level</option>
+                    <option value="1">1 - Very Low</option>
+                    <option value="2">2 - Low</option>
+                    <option value="3">3 - Moderate</option>
+                    <option value="4">4 - High</option>
+                    <option value="5">5 - Very High</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="moodLevel">Mood Level</label>
+                <select id="moodLevel" name="mood_level" required>
+                    <option value="">Select mood level</option>
+                    <option value="1">1 - Very Bad</option>
+                    <option value="2">2 - Bad</option>
+                    <option value="3">3 - Neutral</option>
+                    <option value="4">4 - Good</option>
+                    <option value="5">5 - Very Good</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="emotions">Emotions</label>
+                <select id="emotions" name="emotions" required>
+                    <option value="">Select an emotion</option>
+                    <option value="Happy">Happy</option>
+                    <option value="Calm">Calm</option>
+                    <option value="Motivated">Motivated</option>
+                    <option value="Neutral">Neutral</option>
+                    <option value="Sad">Sad</option>
+                    <option value="Angry">Angry</option>
+                    <option value="Stressed">Stressed</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="note">Notes</label>
+                <textarea
+                    id="note"
+                    name="note"
+                    rows="4"
+                    maxlength="500"
+                    placeholder="Write any thoughts about how you're feeling today..."
+                ></textarea>
+            </div>
+
+            <button type="submit" id="saveMoodBtn">Save Mood</button>
+        </form>
+
+        <p id="message" aria-live="polite"></p>
+
+        <div class="link-text">
+            <a href="/home.html">Back to Home</a>
+        </div>
+    </div>
+
+    <script src="/mood.js"></script>
+    <script src="/reminders.js"></script>
+</body>
+</html>

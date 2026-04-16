@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications - Mood Tracker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="notifications-page">
+        <div class="notification-icon-header">🔔</div>
+        <h1>Notifications</h1>
+        <p>
+            Create reminder notifications for your mood and activity entries.
+            Choose a time and write the message you want to see.
+        </p>
+
+        <div class="notification-panel">
+            <h3>Create Reminder</h3>
+
+            <form id="reminderForm">
+                <div class="form-group">
+                    <label for="reminderTime">Reminder Time</label>
+                    <input type="datetime-local" id="reminderTime" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="reminderMessage">Reminder Message</label>
+                    <input
+                        type="text"
+                        id="reminderMessage"
+                        maxlength="255"
+                        placeholder="Example: Don’t forget to log your mood today"
+                        required
+                    >
+                </div>
+
+                <button type="submit" id="saveReminderBtn">Save Reminder</button>
+            </form>
+
+            <p class="reminder-status" id="reminderStatus"></p>
+
+            <div class="saved-reminders">
+                <h4>Saved Reminders</h4>
+                <div class="saved-reminder-list" id="savedReminderList">
+                    <div class="saved-reminder-empty">No reminders saved.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="nav-buttons single-button">
+            <a href="home.html">Back to Home</a>
+        </div>
+    </div>
+
+    <script>
+        const reminderForm = document.getElementById("reminderForm");
+        const reminderTimeInput = document.getElementById("reminderTime");
+        const reminderMessageInput = document.getElementById("reminderMessage");
+        const reminderStatus = document.getElementById("reminderStatus");
+        const saveReminderBtn = document.getElementById("saveReminderBtn");
+        const savedReminderList = document.getElementById("savedReminderList");
+
+        function showReminderStatus(text, isError = false) {
+            reminderStatus.textContent = text;
+            reminderStatus.style.color = isError ? "#b91c1c" : "#166534";
+        }
+
+        function formatReminderDateTime(value) {
+            const date = new Date(value.replace(" ", "T"));
+            return date.toLocaleString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+                hour: "numeric",
+                minute: "2-digit"
+            });
+        }
+
+        async function loadSavedReminders() {
+            try {
+                const response = await fetch("/api/reminders");
+                const result = await response.json();
+
+                if (!result.success) {
+                    savedReminderList.innerHTML = '<div class="saved-reminder-empty">Could not load reminders.</div>';
+                    return;
+                }
+
+                const reminders = result.data.reminders || [];
+                savedReminderList.innerHTML = "";
+
+                if (!reminders.length) {
+                    savedReminderList.innerHTML = '<div class="saved-reminder-empty">No reminders saved.</div>';
+                    return;
+                }
+
+                reminders.forEach(reminder => {
+                    const card = document.createElement("div");
+                    card.className = "saved-reminder-card";
+                    card.innerHTML = `
+                        <div><strong>Time:</strong> ${formatReminderDateTime(reminder.reminder_time)}</div>
+                        <div style="margin-top: 8px;"><strong>Message:</strong> ${reminder.reminder_message}</div>
+                    `;
+                    savedReminderList.appendChild(card);
+                });
+            } catch (error) {
+                console.error(error);
+                savedReminderList.innerHTML = '<div class="saved-reminder-empty">Could not load reminders.</div>';
+            }
+        }
+
+        window.loadSavedReminders = loadSavedReminders;
+
+        reminderForm.addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            if (!("Notification" in window)) {
+                showReminderStatus("This browser does not support notifications.", true);
+                return;
+            }
+
+            if (Notification.permission !== "granted") {
+                const permission = await Notification.requestPermission();
+
+                if (permission !== "granted") {
+                    showReminderStatus("Please allow notifications first.", true);
+                    return;
+                }
+            }
+
+            const payload = {
+                reminder_time: reminderTimeInput.value.replace("T", " "),
+                reminder_message: reminderMessageInput.value.trim()
+            };
+
+            if (!payload.reminder_time || !payload.reminder_message) {
+                showReminderStatus("Please enter both time and message.", true);
+                return;
+            }
+
+            try {
+                saveReminderBtn.disabled = true;
+                saveReminderBtn.textContent = "Saving...";
+
+                const response = await fetch("/api/reminders", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showReminderStatus("Reminder saved successfully.");
+                    reminderForm.reset();
+                    loadSavedReminders();
+                } else {
+                    showReminderStatus(result.message || "Failed to save reminder.", true);
+                }
+            } catch (error) {
+                console.error(error);
+                showReminderStatus("Could not save reminder.", true);
+            } finally {
+                saveReminderBtn.disabled = false;
+                saveReminderBtn.textContent = "Save Reminder";
+            }
+        });
+
+        loadSavedReminders();
+    </script>
+    <script src="/reminders.js"></script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Mood Tracker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="home-wrapper">
+        <a href="notifications.html" class="notification-bell" title="Notifications">🔔</a>
+
+        <div class="home-box">
+            <h1>Personal Mood and Stress Tracking System</h1>
+
+            <p>
+                Welcome to your dashboard. Here you can track your mood, record stress levels,
+                log helpful activities, view your analyzer dashboard, and use your calendar.
+            </p>
+
+            <p>
+                Use the options below to enter your data and review your emotional trends over time.
+            </p>
+
+            <div class="home-nav-grid">
+                <a href="mood.html">Mood Entry</a>
+                <a href="activities.html">Activities</a>
+                <a href="analyzer.html">Analyzer</a>
+                <a href="calendar.html">Calendar</a>
+                <a href="#" class="logout-btn" id="logoutBtn">Logout</a>
+            </div>
+
+            <div class="home-tip-box">
+                Need reminders? Click the bell icon in the top-right corner to create and manage notification reminders.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("logoutBtn").addEventListener("click", async function (e) {
+            e.preventDefault();
+
+            try {
+                const response = await fetch("/api/auth/logout", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    window.location.replace("login.html");
+                } else {
+                    alert(result.message || "Logout failed.");
+                }
+            } catch (error) {
+                console.error(error);
+                window.location.replace("login.html");
+            }
+        });
+    </script>
+    <script src="/reminders.js"></script>
+</body>
+</html>

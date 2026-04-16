@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Mood Tracker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Register</h1>
+        <p>Create your Mood Tracker account</p>
+
+        <form id="registerForm">
+            <div class="form-group">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Phone</label>
+                <input type="text" id="phone">
+            </div>
+
+            <div class="form-group">
+                <label for="age">Age</label>
+                <input type="number" id="age" min="1">
+            </div>
+
+            <div class="form-group">
+                <label for="gender">Gender</label>
+                <select id="gender">
+                    <option value="">Select Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Create Password</label>
+                <input type="password" id="password" required>
+            </div>
+
+            <button type="submit">Register</button>
+        </form>
+
+        <p id="message"></p>
+
+        <div class="link-text">
+            Already have an account? <a href="/login.html">Sign In</a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("registerForm").addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            const payload = {
+                name: document.getElementById("name").value.trim(),
+                email: document.getElementById("email").value.trim(),
+                phone: document.getElementById("phone").value.trim() || null,
+                age: document.getElementById("age").value ? Number(document.getElementById("age").value) : null,
+                gender: document.getElementById("gender").value || null,
+                password: document.getElementById("password").value
+            };
+
+            const messageEl = document.getElementById("message");
+            messageEl.innerText = "";
+
+            try {
+                const response = await fetch("/api/auth/register", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    window.location.href = "/login.html";
+                    return;
+                }
+
+                let errorMessage = result.message || "Registration failed.";
+                if (result.errors) {
+                    errorMessage += "\n" + Object.values(result.errors).join("\n");
+                }
+
+                messageEl.innerText = errorMessage;
+            } catch (error) {
+                messageEl.innerText = "Could not connect to the backend.";
+            }
+        });
+    </script>
+</body>
+</html>

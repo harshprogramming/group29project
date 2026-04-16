@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analyzer - Mood Tracker</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container-summary">
+        <div class="summary-header">
+            <h1>Analyzer Dashboard</h1>
+            <p>
+                Track your mood patterns, stress levels, helpful activities,
+                and weekly recommendations in one place.
+            </p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h4>Total Entries</h4>
+                <p id="totalEntries">0</p>
+            </div>
+
+            <div class="stat-card">
+                <h4>Average Mood</h4>
+                <p id="avgMood">0.0</p>
+            </div>
+
+            <div class="stat-card">
+                <h4>Average Stress</h4>
+                <p id="avgStress">0.0</p>
+            </div>
+        </div>
+
+        <div class="chart-section">
+            <h3>Mood and Stress Trend</h3>
+            <div class="chart-box">
+                <canvas id="trendChart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart-section">
+            <h3>Top Emotions This Week</h3>
+            <div class="chart-box">
+                <canvas id="emotionChart"></canvas>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>Top Activities This Week</h3>
+            <div class="top-activities-grid" id="topActivities">
+                <div class="no-activity-card">Loading activities...</div>
+            </div>
+        </div>
+        
+        <div class="section">
+    <h3>Best Mood-Improving Activities This Week</h3>
+    <div class="insight-grid" id="moodBoostingActivities">
+        <div class="no-activity-card">Loading mood improvement activities...</div>
+    </div>
+</div>
+
+<div class="section">
+    <h3>Most Stressful Days This Week</h3>
+    <div class="insight-grid" id="stressfulDays">
+        <div class="no-activity-card">Loading stressful days...</div>
+    </div>
+</div>
+
+        <div class="section">
+            <h3>Recommendation</h3>
+            <div class="recommendation-grid" id="recommendations">
+                <div class="no-activity-card">Loading recommendations...</div>
+            </div>
+        </div>
+
+        <div class="nav-buttons single-button">
+            <a href="/home.html">Back to Home</a>
+        </div>
+    </div>
+
+    <script src="/analyzer.js"></script>
+    <script src="/reminders.js"></script>
+</body>
+</html>

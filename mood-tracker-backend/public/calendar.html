@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calendar - Mood Tracker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="calendar-page">
+        <h1>Calendar</h1>
+        <p>Click a date to view all mood and activity entries for that day.</p>
+
+        <div class="calendar-toolbar">
+            <div class="calendar-toolbar-buttons">
+                <button type="button" id="prevMonthBtn">Previous</button>
+            </div>
+
+            <h2 id="monthYear"></h2>
+
+            <div class="calendar-toolbar-buttons">
+                <button type="button" id="todayBtn">Today</button>
+                <button type="button" id="nextMonthBtn">Next</button>
+            </div>
+        </div>
+
+        <div class="calendar-grid">
+            <div class="calendar-weekday">Sun</div>
+            <div class="calendar-weekday">Mon</div>
+            <div class="calendar-weekday">Tue</div>
+            <div class="calendar-weekday">Wed</div>
+            <div class="calendar-weekday">Thu</div>
+            <div class="calendar-weekday">Fri</div>
+            <div class="calendar-weekday">Sat</div>
+        </div>
+
+        <div class="calendar-grid" id="calendarDays"></div>
+
+        <div class="calendar-selected-date" id="selectedDateBox">
+            Selected Date: None
+        </div>
+
+        <div class="calendar-entries-section">
+            <h3>Search Monthly Entries</h3>
+
+            <div class="entry-columns">
+                <div class="entry-column">
+                    <h4>Find Mood Entries by Emotion (This Month)</h4>
+                    <div class="form-group">
+                        <label for="emotionSearch">Emotion</label>
+                        <select id="emotionSearch">
+                            <option value="">Select emotion</option>
+                            <option value="Happy">Happy</option>
+                            <option value="Calm">Calm</option>
+                            <option value="Motivated">Motivated</option>
+                            <option value="Neutral">Neutral</option>
+                            <option value="Sad">Sad</option>
+                            <option value="Angry">Angry</option>
+                            <option value="Stressed">Stressed</option>
+                        </select>
+                    </div>
+                    <button type="button" id="searchEmotionBtn">Search Emotion Entries</button>
+
+                    <div class="entry-list" id="monthlyEmotionResults" style="margin-top: 14px;">
+                        <div class="entry-empty">Choose an emotion to find mood entries from this month.</div>
+                    </div>
+                </div>
+
+                <div class="entry-column">
+                    <h4>Find Activity Entries by Activity (This Month)</h4>
+                    <div class="form-group">
+                        <label for="activitySearch">Activity</label>
+                        <select id="activitySearch">
+                            <option value="">Select activity</option>
+                            <option value="Walking">Walking</option>
+                            <option value="Jogging">Jogging</option>
+                            <option value="Meditation">Meditation</option>
+                            <option value="Yoga">Yoga</option>
+                            <option value="Reading">Reading</option>
+                            <option value="Listening to Music">Listening to Music</option>
+                            <option value="Journaling">Journaling</option>
+                            <option value="Stretching">Stretching</option>
+                            <option value="Deep Breathing">Deep Breathing</option>
+                            <option value="Talking to a Friend">Talking to a Friend</option>
+                        </select>
+                    </div>
+                    <button type="button" id="searchActivityBtn">Search Activity Entries</button>
+
+                    <div class="entry-list" id="monthlyActivityResults" style="margin-top: 14px;">
+                        <div class="entry-empty">Choose an activity to find entries from this month.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="calendar-entries-section">
+            <h3>Entries for Selected Day</h3>
+
+            <div class="entry-columns">
+                <div class="entry-column">
+                    <h4>Mood Entries</h4>
+                    <div class="entry-list" id="moodEntriesList">
+                        <div class="entry-empty">Select a date to view mood entries.</div>
+                    </div>
+                </div>
+
+                <div class="entry-column">
+                    <h4>Activity Entries</h4>
+                    <div class="entry-list" id="activityEntriesList">
+                        <div class="entry-empty">Select a date to view activity entries.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="nav-buttons single-button calendar-actions">
+            <a href="home.html">Back to Home</a>
+        </div>
+    </div>
+
+    <script>
+        const monthYearEl = document.getElementById("monthYear");
+        const calendarDaysEl = document.getElementById("calendarDays");
+        const selectedDateBox = document.getElementById("selectedDateBox");
+        const moodEntriesList = document.getElementById("moodEntriesList");
+        const activityEntriesList = document.getElementById("activityEntriesList");
+        const prevMonthBtn = document.getElementById("prevMonthBtn");
+        const nextMonthBtn = document.getElementById("nextMonthBtn");
+        const todayBtn = document.getElementById("todayBtn");
+
+        const emotionSearch = document.getElementById("emotionSearch");
+        const activitySearch = document.getElementById("activitySearch");
+        const searchEmotionBtn = document.getElementById("searchEmotionBtn");
+        const searchActivityBtn = document.getElementById("searchActivityBtn");
+        const monthlyEmotionResults = document.getElementById("monthlyEmotionResults");
+        const monthlyActivityResults = document.getElementById("monthlyActivityResults");
+
+        const today = new Date();
+        let currentMonth = today.getMonth();
+        let currentYear = today.getFullYear();
+        let selectedDateString = null;
+
+        function pad(value) {
+            return String(value).padStart(2, "0");
+        }
+
+        function toDateString(date) {
+            return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+        }
+
+        function formatDate(date) {
+            return date.toLocaleDateString("en-US", {
+                weekday: "long",
+                year: "numeric",
+                month: "long",
+                day: "numeric"
+            });
+        }
+
+        function formatTime(timeValue) {
+            const [hours, minutes] = timeValue.split(":");
+            const date = new Date();
+            date.setHours(Number(hours), Number(minutes), 0);
+
+            return date.toLocaleTimeString("en-US", {
+                hour: "numeric",
+                minute: "2-digit"
+            });
+        }
+
+        function getMonthRange(year, month) {
+            const start = `${year}-${pad(month + 1)}-01`;
+            const lastDay = new Date(year, month + 1, 0).getDate();
+            const end = `${year}-${pad(month + 1)}-${pad(lastDay)}`;
+            return { start, end };
+        }
+
+        async function fetchJson(url, options = {}) {
+            const response = await fetch(url, options);
+            const rawText = await response.text();
+
+            let result;
+            try {
+                result = JSON.parse(rawText);
+            } catch (error) {
+                throw new Error(`Invalid JSON from ${url}`);
+            }
+
+            if (!response.ok || !result.success) {
+                throw new Error(result.message || `Request failed for ${url}`);
+            }
+
+            return result;
+        }
+
+        function moodEditForm(entry) {
+    return `
+        <div class="entry-edit-form">
+            <div>
+                <label>Date</label>
+                <input type="date" name="date" value="${entry.date}">
+            </div>
+            <div>
+                <label>Time</label>
+                <input type="time" name="time" value="${entry.time.slice(0, 5)}">
+            </div>
+            <div>
+                <label>Stress Level</label>
+                <select name="stress_level">
+                    ${[1,2,3,4,5].map(n => `<option value="${n}" ${Number(entry.stress_level) === n ? "selected" : ""}>${n}</option>`).join("")}
+                </select>
+            </div>
+            <div>
+                <label>Mood Level</label>
+                <select name="mood_level">
+                    ${[1,2,3,4,5].map(n => `<option value="${n}" ${Number(entry.mood_level) === n ? "selected" : ""}>${n}</option>`).join("")}
+                </select>
+            </div>
+            <div>
+                <label>Emotion</label>
+                <select name="emotions">
+                    ${["Happy", "Calm", "Motivated", "Neutral", "Sad", "Angry", "Stressed"].map(emotion =>
+                        `<option value="${emotion}" ${entry.emotions === emotion ? "selected" : ""}>${emotion}</option>`
+                    ).join("")}
+                </select>
+            </div>
+            <div>
+                <label>Notes</label>
+                <textarea name="note" rows="3">${entry.note || ""}</textarea>
+            </div>
+            <div class="entry-edit-actions">
+                <button type="button" class="entry-save-btn" data-save-type="mood" data-id="${entry.entry_id}">Save</button>
+                <button type="button" class="entry-cancel-btn" data-cancel-edit="true">Cancel</button>
+            </div>
+        </div>
+    `;
+}
+
+function activityEditForm(entry) {
+    return `
+        <div class="entry-edit-form">
+            <div>
+                <label>Date</label>
+                <input type="date" name="date" value="${entry.date}">
+            </div>
+            <div>
+                <label>Time</label>
+                <input type="time" name="time" value="${entry.time.slice(0, 5)}">
+            </div>
+            <div>
+                <label>Activity</label>
+                <select name="activity_name">
+                    ${[
+                        "Walking",
+                        "Jogging",
+                        "Meditation",
+                        "Yoga",
+                        "Reading",
+                        "Listening to Music",
+                        "Journaling",
+                        "Stretching",
+                        "Deep Breathing",
+                        "Talking to a Friend"
+                    ].map(activity =>
+                        `<option value="${activity}" ${entry.activity_name === activity ? "selected" : ""}>${activity}</option>`
+                    ).join("")}
+                </select>
+            </div>
+            <div>
+                <label>Category</label>
+                <select name="category">
+                    ${["", "Physical", "Mindfulness", "Relaxation", "Social", "Creative"].map(category =>
+                        `<option value="${category}" ${(entry.category || "") === category ? "selected" : ""}>${category || "Select a category"}</option>`
+                    ).join("")}
+                </select>
+            </div>
+            <div>
+                <label>Duration (minutes)</label>
+                <input type="number" name="duration_minutes" min="1" max="300" value="${entry.duration_minutes ?? ""}">
+            </div>
+            <div>
+                <label>Effort Level</label>
+                <select name="effort_level">
+                    ${["", 1, 2, 3, 4, 5].map(level =>
+                        `<option value="${level}" ${(entry.effort_level ?? "") == level ? "selected" : ""}>${level === "" ? "Select effort level" : level}</option>`
+                    ).join("")}
+                </select>
+            </div>
+            <div>
+                <label>Notes</label>
+                <textarea name="note" rows="3">${entry.note || ""}</textarea>
+            </div>
+            <div class="entry-edit-actions">
+                <button type="button" class="entry-save-btn" data-save-type="activity" data-id="${entry.activity_entry_id}">Save</button>
+                <button type="button" class="entry-cancel-btn" data-cancel-edit="true">Cancel</button>
+            </div>
+        </div>
+    `;
+}
+
+        function renderMoodCards(entries) {
+            moodEntriesList.innerHTML = "";
+
+            if (!entries.length) {
+                moodEntriesList.innerHTML = `<div class="entry-empty">No mood entries for this day.</div>`;
+                return;
+            }
+
+            entries.forEach(entry => {
+                const card = document.createElement("div");
+                card.className = "entry-card";
+                card.dataset.entryType = "mood";
+                card.dataset.entryId = entry.entry_id;
+                card.dataset.entryJson = JSON.stringify(entry).replace(/'/g, "&apos;");
+
+                card.innerHTML = `
+                    <div class="entry-card-actions">
+                        <button class="entry-action-btn edit-btn" data-edit-type="mood" data-id="${entry.entry_id}" title="Edit">✎</button>
+                        <button class="entry-action-btn delete-btn" data-delete-type="mood" data-id="${entry.entry_id}" title="Delete">✕</button>
+                    </div>
+
+                    <div class="entry-card-view">
+                        <div class="entry-card-title">${entry.emotions || "Mood Entry"}</div>
+                        <div class="entry-card-row"><strong>Time:</strong> ${formatTime(entry.time)}</div>
+                        <div class="entry-card-row"><strong>Mood Level:</strong> ${entry.mood_level}</div>
+                        <div class="entry-card-row"><strong>Stress Level:</strong> ${entry.stress_level}</div>
+                        <div class="entry-card-row"><strong>Emotion:</strong> ${entry.emotions || "None"}</div>
+                        <div class="entry-card-row"><strong>Notes:</strong> ${entry.note && entry.note.trim() !== "" ? entry.note : "No notes"}</div>
+                    </div>
+                `;
+
+                moodEntriesList.appendChild(card);
+            });
+        }
+
+function renderActivityCards(entries) {
+    activityEntriesList.innerHTML = "";
+
+    if (!entries.length) {
+        activityEntriesList.innerHTML = `<div class="entry-empty">No activity entries for this day.</div>`;
+        return;
+    }
+
+    entries.forEach(entry => {
+        const card = document.createElement("div");
+        card.className = "entry-card";
+        card.dataset.entryType = "activity";
+        card.dataset.entryId = entry.activity_entry_id;
+        card.dataset.entryJson = JSON.stringify(entry).replace(/'/g, "&apos;");
+
+        card.innerHTML = `
+            <div class="entry-card-actions">
+                <button class="entry-action-btn edit-btn" data-edit-type="activity" data-id="${entry.activity_entry_id}" title="Edit">✎</button>
+                <button class="entry-action-btn delete-btn" data-delete-type="activity" data-id="${entry.activity_entry_id}" title="Delete">✕</button>
+            </div>
+
+            <div class="entry-card-view">
+                <div class="entry-card-title">${entry.activity_name}</div>
+                <div class="entry-card-row"><strong>Time:</strong> ${formatTime(entry.time)}</div>
+                <div class="entry-card-row"><strong>Date:</strong> ${entry.date}</div>
+                <div class="entry-card-row"><strong>Category:</strong> ${entry.category && entry.category.trim() !== "" ? entry.category : "No category"}</div>
+                <div class="entry-card-row"><strong>Duration:</strong> ${entry.duration_minutes ? `${entry.duration_minutes} minutes` : "Not set"}</div>
+                <div class="entry-card-row"><strong>Effort Level:</strong> ${entry.effort_level ? entry.effort_level : "Not set"}</div>
+                <div class="entry-card-row"><strong>Notes:</strong> ${entry.note && entry.note.trim() !== "" ? entry.note : "No notes"}</div>
+            </div>
+        `;
+
+        activityEntriesList.appendChild(card);
+    });
+}
+
+        function renderMonthlyEmotionCards(entries) {
+            monthlyEmotionResults.innerHTML = "";
+
+            if (!entries.length) {
+                monthlyEmotionResults.innerHTML = `<div class="entry-empty">No mood entries found for that emotion this month.</div>`;
+                return;
+            }
+
+            entries.forEach(entry => {
+                const card = document.createElement("div");
+                card.className = "entry-card";
+                card.innerHTML = `
+                    <div class="entry-card-title">${entry.emotions}</div>
+                    <div class="entry-card-row"><strong>Date:</strong> ${entry.date}</div>
+                    <div class="entry-card-row"><strong>Time:</strong> ${formatTime(entry.time)}</div>
+                    <div class="entry-card-row"><strong>Mood Level:</strong> ${entry.mood_level}</div>
+                    <div class="entry-card-row"><strong>Stress Level:</strong> ${entry.stress_level}</div>
+                    <div class="entry-card-row"><strong>Notes:</strong> ${entry.note && entry.note.trim() !== "" ? entry.note : "No notes"}</div>
+                `;
+                monthlyEmotionResults.appendChild(card);
+            });
+        }
+
+function renderMonthlyActivityCards(entries) {
+    monthlyActivityResults.innerHTML = "";
+
+    if (!entries.length) {
+        monthlyActivityResults.innerHTML = `<div class="entry-empty">No activity entries found for that activity this month.</div>`;
+        return;
+    }
+
+    entries.forEach(entry => {
+        const card = document.createElement("div");
+        card.className = "entry-card";
+        card.innerHTML = `
+            <div class="entry-card-title">${entry.activity_name}</div>
+            <div class="entry-card-row"><strong>Date:</strong> ${entry.date}</div>
+            <div class="entry-card-row"><strong>Time:</strong> ${formatTime(entry.time)}</div>
+            <div class="entry-card-row"><strong>Category:</strong> ${entry.category && entry.category.trim() !== "" ? entry.category : "No category"}</div>
+            <div class="entry-card-row"><strong>Duration:</strong> ${entry.duration_minutes ? `${entry.duration_minutes} minutes` : "Not set"}</div>
+            <div class="entry-card-row"><strong>Effort Level:</strong> ${entry.effort_level ? entry.effort_level : "Not set"}</div>
+            <div class="entry-card-row"><strong>Notes:</strong> ${entry.note && entry.note.trim() !== "" ? entry.note : "No notes"}</div>
+        `;
+        monthlyActivityResults.appendChild(card);
+    });
+}
+
+        async function loadEntriesForDate(dateString, displayDate) {
+            selectedDateBox.textContent = `Selected Date: ${formatDate(displayDate)}`;
+
+            moodEntriesList.innerHTML = `<div class="entry-empty">Loading mood entries...</div>`;
+            activityEntriesList.innerHTML = `<div class="entry-empty">Loading activity entries...</div>`;
+
+            try {
+                const [moodResult, activityResult] = await Promise.all([
+                    fetchJson(`/api/moods?from=${dateString}&to=${dateString}`),
+                    fetchJson(`/api/activities`)
+                ]);
+
+                const moodEntries = (moodResult.data.entries || [])
+                    .filter(entry => entry.date === dateString)
+                    .sort((a, b) => a.time.localeCompare(b.time));
+
+                const activityEntries = (activityResult.data.activities || [])
+                    .filter(entry => entry.date === dateString)
+                    .sort((a, b) => a.time.localeCompare(b.time));
+
+                renderMoodCards(moodEntries);
+                renderActivityCards(activityEntries);
+            } catch (error) {
+                console.error("Calendar entries load error:", error);
+                moodEntriesList.innerHTML = `<div class="entry-empty">Could not load mood entries.</div>`;
+                activityEntriesList.innerHTML = `<div class="entry-empty">Could not load activity entries.</div>`;
+            }
+        }
+
+        async function searchMonthlyEmotionEntries() {
+            const selectedEmotion = emotionSearch.value;
+
+            if (!selectedEmotion) {
+                monthlyEmotionResults.innerHTML = `<div class="entry-empty">Please choose an emotion first.</div>`;
+                return;
+            }
+
+            monthlyEmotionResults.innerHTML = `<div class="entry-empty">Searching mood entries...</div>`;
+
+            try {
+                const { start, end } = getMonthRange(currentYear, currentMonth);
+                const result = await fetchJson(`/api/moods?from=${start}&to=${end}`);
+
+                const entries = (result.data.entries || [])
+                    .filter(entry => entry.emotions === selectedEmotion)
+                    .sort((a, b) => {
+                        if (a.date === b.date) {
+                            return a.time.localeCompare(b.time);
+                        }
+                        return a.date.localeCompare(b.date);
+                    });
+
+                renderMonthlyEmotionCards(entries);
+            } catch (error) {
+                console.error("Monthly emotion search error:", error);
+                monthlyEmotionResults.innerHTML = `<div class="entry-empty">Could not search mood entries.</div>`;
+            }
+        }
+
+        async function searchMonthlyActivityEntries() {
+            const selectedActivity = activitySearch.value;
+
+            if (!selectedActivity) {
+                monthlyActivityResults.innerHTML = `<div class="entry-empty">Please choose an activity first.</div>`;
+                return;
+            }
+
+            monthlyActivityResults.innerHTML = `<div class="entry-empty">Searching activity entries...</div>`;
+
+            try {
+                const { start, end } = getMonthRange(currentYear, currentMonth);
+                const result = await fetchJson(`/api/activities`);
+
+                const entries = (result.data.activities || [])
+                    .filter(entry =>
+                        entry.activity_name === selectedActivity &&
+                        entry.date >= start &&
+                        entry.date <= end
+                    )
+                    .sort((a, b) => {
+                        if (a.date === b.date) {
+                            return a.time.localeCompare(b.time);
+                        }
+                        return a.date.localeCompare(b.date);
+                    });
+
+                renderMonthlyActivityCards(entries);
+            } catch (error) {
+                console.error("Monthly activity search error:", error);
+                monthlyActivityResults.innerHTML = `<div class="entry-empty">Could not search activity entries.</div>`;
+            }
+        }
+
+        function updateSelectedCell() {
+            const allCells = calendarDaysEl.querySelectorAll(".calendar-day");
+            allCells.forEach(cell => {
+                if (cell.dataset.date && cell.dataset.date === selectedDateString) {
+                    cell.classList.add("selected");
+                } else {
+                    cell.classList.remove("selected");
+                }
+            });
+        }
+
+        function renderCalendar(month, year) {
+            calendarDaysEl.innerHTML = "";
+
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            monthYearEl.textContent = new Date(year, month).toLocaleDateString("en-US", {
+                month: "long",
+                year: "numeric"
+            });
+
+            for (let i = 0; i < firstDay; i++) {
+                const emptyCell = document.createElement("div");
+                emptyCell.className = "calendar-day empty";
+                calendarDaysEl.appendChild(emptyCell);
+            }
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const cell = document.createElement("div");
+                cell.className = "calendar-day";
+
+                const dateNumber = document.createElement("div");
+                dateNumber.className = "calendar-day-number";
+                dateNumber.textContent = day;
+
+                cell.appendChild(dateNumber);
+
+                const cellDate = new Date(year, month, day);
+                const dateString = toDateString(cellDate);
+                cell.dataset.date = dateString;
+
+                if (
+                    day === today.getDate() &&
+                    month === today.getMonth() &&
+                    year === today.getFullYear()
+                ) {
+                    cell.classList.add("today");
+                }
+
+                if (selectedDateString === dateString) {
+                    cell.classList.add("selected");
+                }
+
+                cell.addEventListener("click", () => {
+                    selectedDateString = dateString;
+                    updateSelectedCell();
+                    loadEntriesForDate(dateString, cellDate);
+                });
+
+                calendarDaysEl.appendChild(cell);
+            }
+        }
+
+        function getCardEntry(card) {
+            return JSON.parse(card.dataset.entryJson.replace(/&apos;/g, "'"));
+        }
+
+        function openEditMode(card, type) {
+            const entry = getCardEntry(card);
+            const view = card.querySelector(".entry-card-view");
+            const actions = card.querySelector(".entry-card-actions");
+
+            if (!view || !actions) return;
+
+            view.style.display = "none";
+            actions.style.display = "none";
+
+            const existingForm = card.querySelector(".entry-edit-form");
+            if (existingForm) existingForm.remove();
+
+            card.insertAdjacentHTML("beforeend", type === "mood" ? moodEditForm(entry) : activityEditForm(entry));
+        }
+
+        function closeEditMode(card) {
+            const view = card.querySelector(".entry-card-view");
+            const actions = card.querySelector(".entry-card-actions");
+            const form = card.querySelector(".entry-edit-form");
+
+            if (form) form.remove();
+            if (view) view.style.display = "";
+            if (actions) actions.style.display = "";
+        }
+
+        async function saveMoodEntry(card, id) {
+            const form = card.querySelector(".entry-edit-form");
+            const payload = {
+                date: form.querySelector('[name="date"]').value,
+                time: form.querySelector('[name="time"]').value,
+                stress_level: Number(form.querySelector('[name="stress_level"]').value),
+                mood_level: Number(form.querySelector('[name="mood_level"]').value),
+                emotions: form.querySelector('[name="emotions"]').value,
+                note: form.querySelector('[name="note"]').value.trim()
+            };
+
+            await fetchJson(`/api/moods/${id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+
+            selectedDateString = payload.date;
+            currentMonth = Number(payload.date.split("-")[1]) - 1;
+            currentYear = Number(payload.date.split("-")[0]);
+            renderCalendar(currentMonth, currentYear);
+            updateSelectedCell();
+            loadEntriesForDate(payload.date, new Date(`${payload.date}T00:00:00`));
+        }
+
+async function saveActivityEntry(card, id) {
+    const form = card.querySelector(".entry-edit-form");
+    const payload = {
+        date: form.querySelector('[name="date"]').value,
+        time: form.querySelector('[name="time"]').value,
+        activity_name: form.querySelector('[name="activity_name"]').value,
+        category: form.querySelector('[name="category"]').value || null,
+        duration_minutes: form.querySelector('[name="duration_minutes"]').value
+            ? Number(form.querySelector('[name="duration_minutes"]').value)
+            : null,
+        effort_level: form.querySelector('[name="effort_level"]').value
+            ? Number(form.querySelector('[name="effort_level"]').value)
+            : null,
+        note: form.querySelector('[name="note"]').value.trim() || null
+    };
+
+    await fetchJson(`/api/activities/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+    });
+
+    selectedDateString = payload.date;
+    currentMonth = Number(payload.date.split("-")[1]) - 1;
+    currentYear = Number(payload.date.split("-")[0]);
+    renderCalendar(currentMonth, currentYear);
+    updateSelectedCell();
+    loadEntriesForDate(payload.date, new Date(`${payload.date}T00:00:00`));
+}
+
+        async function deleteEntry(type, id) {
+            const url = type === "mood" ? `/api/moods/${id}` : `/api/activities/${id}`;
+            await fetchJson(url, { method: "DELETE" });
+
+            if (selectedDateString) {
+                loadEntriesForDate(selectedDateString, new Date(`${selectedDateString}T00:00:00`));
+            }
+        }
+
+        document.addEventListener("click", async (event) => {
+            const editButton = event.target.closest("[data-edit-type]");
+            const deleteButton = event.target.closest("[data-delete-type]");
+            const cancelButton = event.target.closest("[data-cancel-edit]");
+            const saveButton = event.target.closest("[data-save-type]");
+
+            if (editButton) {
+                const type = editButton.dataset.editType;
+                const card = editButton.closest(".entry-card");
+                openEditMode(card, type);
+                return;
+            }
+
+            if (cancelButton) {
+                const card = cancelButton.closest(".entry-card");
+                closeEditMode(card);
+                return;
+            }
+
+            if (saveButton) {
+                const type = saveButton.dataset.saveType;
+                const id = saveButton.dataset.id;
+                const card = saveButton.closest(".entry-card");
+
+                try {
+                    if (type === "mood") {
+                        await saveMoodEntry(card, id);
+                    } else {
+                        await saveActivityEntry(card, id);
+                    }
+                } catch (error) {
+                    console.error("Save failed:", error);
+                    alert("Update failed.");
+                }
+                return;
+            }
+
+            if (deleteButton) {
+                const type = deleteButton.dataset.deleteType;
+                const id = deleteButton.dataset.id;
+
+                const confirmed = confirm("Delete this entry?");
+                if (!confirmed) return;
+
+                try {
+                    await deleteEntry(type, id);
+                } catch (error) {
+                    console.error("Delete failed:", error);
+                    alert("Delete failed.");
+                }
+            }
+        });
+
+        searchEmotionBtn.addEventListener("click", searchMonthlyEmotionEntries);
+        searchActivityBtn.addEventListener("click", searchMonthlyActivityEntries);
+
+        prevMonthBtn.addEventListener("click", () => {
+            currentMonth--;
+
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+
+            renderCalendar(currentMonth, currentYear);
+            monthlyEmotionResults.innerHTML = `<div class="entry-empty">Choose an emotion to find mood entries from this month.</div>`;
+            monthlyActivityResults.innerHTML = `<div class="entry-empty">Choose an activity to find entries from this month.</div>`;
+        });
+
+        nextMonthBtn.addEventListener("click", () => {
+            currentMonth++;
+
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+
+            renderCalendar(currentMonth, currentYear);
+            monthlyEmotionResults.innerHTML = `<div class="entry-empty">Choose an emotion to find mood entries from this month.</div>`;
+            monthlyActivityResults.innerHTML = `<div class="entry-empty">Choose an activity to find entries from this month.</div>`;
+        });
+
+        todayBtn.addEventListener("click", () => {
+            currentMonth = today.getMonth();
+            currentYear = today.getFullYear();
+            selectedDateString = toDateString(today);
+            renderCalendar(currentMonth, currentYear);
+            loadEntriesForDate(selectedDateString, today);
+            monthlyEmotionResults.innerHTML = `<div class="entry-empty">Choose an emotion to find mood entries from this month.</div>`;
+            monthlyActivityResults.innerHTML = `<div class="entry-empty">Choose an activity to find entries from this month.</div>`;
+        });
+
+        renderCalendar(currentMonth, currentYear);
+    </script>
+    <script src="/reminders.js"></script>
+</body>
+</html>

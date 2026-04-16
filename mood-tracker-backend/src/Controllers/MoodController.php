@@ -30,7 +30,7 @@ class MoodController
     {
         $data = Request::body();
 
-        $errors = validate_required($data, ['date', 'time', 'intensity', 'stress_level', 'mood_level']);
+        $errors = validate_required($data, ['date', 'time', 'stress_level', 'mood_level', 'emotions']);
 
         if (!empty($errors)) {
             Response::error('Validation failed', 422, $errors);
@@ -39,13 +39,10 @@ class MoodController
         $payload = [
             'date' => $data['date'],
             'time' => $data['time'],
-            'intensity' => (int)$data['intensity'],
             'stress_level' => (int)$data['stress_level'],
             'mood_level' => (int)$data['mood_level'],
-            'note' => $data['note'] ?? null,
-            'emotion_ids' => sanitize_int_array($data['emotion_ids'] ?? []),
-            'stress_factor_ids' => sanitize_int_array($data['stress_factor_ids'] ?? []),
-            'activity_ids' => sanitize_int_array($data['activity_ids'] ?? []),
+            'emotions' => isset($data['emotions']) ? trim($data['emotions']) : null,
+            'note' => isset($data['note']) ? trim($data['note']) : null,
         ];
 
         $entryId = $this->moodRepository->createMoodEntry(current_user_id(), $payload);
@@ -58,7 +55,7 @@ class MoodController
     {
         $data = Request::body();
 
-        $errors = validate_required($data, ['date', 'time', 'intensity', 'stress_level', 'mood_level']);
+        $errors = validate_required($data, ['date', 'time', 'stress_level', 'mood_level', 'emotions']);
 
         if (!empty($errors)) {
             Response::error('Validation failed', 422, $errors);
@@ -67,13 +64,10 @@ class MoodController
         $payload = [
             'date' => $data['date'],
             'time' => $data['time'],
-            'intensity' => (int)$data['intensity'],
             'stress_level' => (int)$data['stress_level'],
             'mood_level' => (int)$data['mood_level'],
-            'note' => $data['note'] ?? null,
-            'emotion_ids' => sanitize_int_array($data['emotion_ids'] ?? []),
-            'stress_factor_ids' => sanitize_int_array($data['stress_factor_ids'] ?? []),
-            'activity_ids' => sanitize_int_array($data['activity_ids'] ?? []),
+            'emotions' => isset($data['emotions']) ? trim($data['emotions']) : null,
+            'note' => isset($data['note']) ? trim($data['note']) : null,
         ];
 
         $updated = $this->moodRepository->updateMoodEntry((int)$id, current_user_id(), $payload);

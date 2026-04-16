@@ -11,7 +11,7 @@ return [
         'port' => '3306',
         'database' => 'mood_tracker',
         'username' => 'root',
-        'password' => '',
+        'password' => 'Testing5441',
         'charset' => 'utf8mb4',
     ],
 
