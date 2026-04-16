@@ -14,7 +14,7 @@ class Request
         return rtrim($path, '/') ?: '/';
     }
 
-    public static function query(string $key = null, $default = null)
+    public static function query(?string $key = null, $default = null)
     {
         if ($key === null) {
             return $_GET;
