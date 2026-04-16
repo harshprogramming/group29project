@@ -46,7 +46,9 @@ $router = new Router();
 $router->post('/api/auth/register', [$authController, 'register']);
 $router->post('/api/auth/login', [$authController, 'login']);
 $router->post('/api/auth/logout', [$authController, 'logout']);
-$router->get('/api/auth/me', [$authController, 'me']);
+$router->get('/api/auth/me', [AuthMiddleware::class, 'handle'], [$authController, 'me']);
+$router->put('/api/auth/me', [AuthMiddleware::class, 'handle'], [$authController, 'updateMe']);
+$router->delete('/api/auth/me', [AuthMiddleware::class, 'handle'], [$authController, 'deleteMe']);
 
 $router->get('/api/reference/options', [$referenceController, 'options']);
 
@@ -69,6 +71,7 @@ $router->get('/api/activities/most-active-day', [AuthMiddleware::class, 'handle'
 $router->post('/api/reminders', [AuthMiddleware::class, 'handle'], [$reminderController, 'store']);
 $router->get('/api/reminders', [AuthMiddleware::class, 'handle'], [$reminderController, 'index']);
 $router->get('/api/reminders/due', [AuthMiddleware::class, 'handle'], [$reminderController, 'due']);
+$router->put('/api/reminders/{id}', [AuthMiddleware::class, 'handle'], [$reminderController, 'update']);
 $router->delete('/api/reminders/{id}', [AuthMiddleware::class, 'handle'], [$reminderController, 'destroy']);
 
 return $router;

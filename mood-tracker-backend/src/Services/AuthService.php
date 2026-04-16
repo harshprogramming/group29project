@@ -61,6 +61,64 @@ class AuthService
         ];
     }
 
+    public function updateCurrentUser(int $userId, array $data): array
+    {
+        $errors = validate_required($data, ['name', 'email']);
+
+        if (!empty($errors)) {
+            return ['errors' => $errors];
+        }
+
+        if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
+            return ['errors' => ['email' => 'Invalid email format.']];
+        }
+
+        if ($this->userRepository->findByEmailExcludingUser(trim($data['email']), $userId)) {
+            return ['errors' => ['email' => 'Email already exists.']];
+        }
+
+        $existingUser = $this->userRepository->findById($userId);
+        if (!$existingUser) {
+            return ['errors' => ['user' => 'User not found.']];
+        }
+
+        $password = null;
+        $fullUserRow = $this->userRepository->findByEmail($existingUser['email']);
+        $password = $fullUserRow['password'] ?? null;
+
+        if (!empty($data['password'])) {
+            if (strlen($data['password']) < 6) {
+                return ['errors' => ['password' => 'Password must be at least 6 characters.']];
+            }
+            $password = password_hash($data['password'], PASSWORD_DEFAULT);
+        }
+
+        $this->userRepository->update($userId, [
+            'name' => trim($data['name']),
+            'email' => trim($data['email']),
+            'phone' => $data['phone'] ?? null,
+            'age' => !empty($data['age']) ? (int)$data['age'] : null,
+            'gender' => $data['gender'] ?? null,
+            'password' => $password
+        ]);
+
+        return [
+            'user' => $this->userRepository->findById($userId)
+        ];
+    }
+
+    public function deleteCurrentUser(int $userId): bool
+    {
+        $deleted = $this->userRepository->delete($userId);
+
+        if ($deleted) {
+            $this->logout();
+            return true;
+        }
+
+        return false;
+    }
+
     public function logout(): void
     {
         $_SESSION = [];

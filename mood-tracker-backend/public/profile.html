@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Mood Tracker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="profile-page">
+        <div class="profile-icon-header">👤</div>
+        <h1>My Profile</h1>
+        <p>View and update your account details below.</p>
+
+        <div class="profile-panel">
+            <form id="profileForm">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone</label>
+                    <input type="text" id="phone">
+                </div>
+
+                <div class="form-group">
+                    <label for="age">Age</label>
+                    <input type="number" id="age" min="1">
+                </div>
+
+                <div class="form-group">
+                    <label for="gender">Gender</label>
+                    <select id="gender">
+                        <option value="">Select Gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">New Password (optional)</label>
+                    <input type="password" id="password" placeholder="Leave blank to keep current password">
+                </div>
+
+                <button type="submit" id="saveProfileBtn">Save Changes</button>
+                <button type="button" id="deleteAccountBtn" class="delete-account-btn">Delete Account</button>
+            </form>
+
+            <p id="profileMessage" aria-live="polite"></p>
+        </div>
+
+        <div class="nav-buttons single-button">
+            <a href="home.html">Back to Home</a>
+        </div>
+    </div>
+
+    <script>
+        const profileForm = document.getElementById("profileForm");
+        const saveProfileBtn = document.getElementById("saveProfileBtn");
+        const deleteAccountBtn = document.getElementById("deleteAccountBtn");
+        const profileMessage = document.getElementById("profileMessage");
+
+        function showProfileMessage(text, isError = false) {
+            profileMessage.textContent = text;
+            profileMessage.style.color = isError ? "#b91c1c" : "#166534";
+        }
+
+        function clearProfileMessage() {
+            profileMessage.textContent = "";
+        }
+
+        async function loadProfile() {
+            try {
+                const response = await fetch("/api/auth/me");
+                const result = await response.json();
+
+                if (!result.success) {
+                    window.location.replace("login.html");
+                    return;
+                }
+
+                const user = result.data.user;
+                document.getElementById("name").value = user.name || "";
+                document.getElementById("email").value = user.email || "";
+                document.getElementById("phone").value = user.phone || "";
+                document.getElementById("age").value = user.age || "";
+                document.getElementById("gender").value = user.gender || "";
+            } catch (error) {
+                console.error(error);
+                window.location.replace("login.html");
+            }
+        }
+
+        profileForm.addEventListener("submit", async function (e) {
+            e.preventDefault();
+            clearProfileMessage();
+
+            const payload = {
+                name: document.getElementById("name").value.trim(),
+                email: document.getElementById("email").value.trim(),
+                phone: document.getElementById("phone").value.trim() || null,
+                age: document.getElementById("age").value ? Number(document.getElementById("age").value) : null,
+                gender: document.getElementById("gender").value || null,
+                password: document.getElementById("password").value.trim()
+            };
+
+            try {
+                saveProfileBtn.disabled = true;
+                saveProfileBtn.textContent = "Saving...";
+
+                const response = await fetch("/api/auth/me", {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showProfileMessage("Profile updated successfully.");
+                    document.getElementById("password").value = "";
+                } else {
+                    let errorMessage = result.message || "Profile update failed.";
+                    if (result.errors) {
+                        errorMessage += " " + Object.values(result.errors).join(" ");
+                    }
+                    showProfileMessage(errorMessage, true);
+                }
+            } catch (error) {
+                console.error(error);
+                showProfileMessage("Could not update profile.", true);
+            } finally {
+                saveProfileBtn.disabled = false;
+                saveProfileBtn.textContent = "Save Changes";
+            }
+        });
+
+        deleteAccountBtn.addEventListener("click", async function () {
+            const confirmed = confirm("Are you sure you want to permanently delete your account? This cannot be undone.");
+            if (!confirmed) return;
+
+            try {
+                deleteAccountBtn.disabled = true;
+                deleteAccountBtn.textContent = "Deleting...";
+
+                const response = await fetch("/api/auth/me", {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    window.location.replace("login.html");
+                } else {
+                    showProfileMessage(result.message || "Failed to delete account.", true);
+                }
+            } catch (error) {
+                console.error(error);
+                showProfileMessage("Could not delete account.", true);
+            } finally {
+                deleteAccountBtn.disabled = false;
+                deleteAccountBtn.textContent = "Delete Account";
+            }
+        });
+
+        loadProfile();
+    </script>
+    <script src="/reminders.js"></script>
+</body>
+</html>

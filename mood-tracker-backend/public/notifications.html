@@ -16,9 +16,11 @@
         </p>
 
         <div class="notification-panel">
-            <h3>Create Reminder</h3>
+            <h3 id="reminderFormTitle">Create Reminder</h3>
 
             <form id="reminderForm">
+                <input type="hidden" id="editingReminderId" value="">
+
                 <div class="form-group">
                     <label for="reminderTime">Reminder Time</label>
                     <input type="datetime-local" id="reminderTime" required>
@@ -36,6 +38,9 @@
                 </div>
 
                 <button type="submit" id="saveReminderBtn">Save Reminder</button>
+                <button type="button" id="cancelEditBtn" style="display:none; margin-top:10px; background:#6b7280;">
+                    Cancel Edit
+                </button>
             </form>
 
             <p class="reminder-status" id="reminderStatus"></p>
@@ -60,10 +65,17 @@
         const reminderStatus = document.getElementById("reminderStatus");
         const saveReminderBtn = document.getElementById("saveReminderBtn");
         const savedReminderList = document.getElementById("savedReminderList");
+        const editingReminderIdInput = document.getElementById("editingReminderId");
+        const reminderFormTitle = document.getElementById("reminderFormTitle");
+        const cancelEditBtn = document.getElementById("cancelEditBtn");
 
         function showReminderStatus(text, isError = false) {
             reminderStatus.textContent = text;
             reminderStatus.style.color = isError ? "#b91c1c" : "#166534";
+        }
+
+        function clearReminderStatus() {
+            reminderStatus.textContent = "";
         }
 
         function formatReminderDateTime(value) {
@@ -75,6 +87,35 @@
                 hour: "numeric",
                 minute: "2-digit"
             });
+        }
+
+        function toDateTimeLocalValue(value) {
+            const date = new Date(value.replace(" ", "T"));
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, "0");
+            const day = String(date.getDate()).padStart(2, "0");
+            const hours = String(date.getHours()).padStart(2, "0");
+            const minutes = String(date.getMinutes()).padStart(2, "0");
+            return `${year}-${month}-${day}T${hours}:${minutes}`;
+        }
+
+        function resetReminderForm() {
+            editingReminderIdInput.value = "";
+            reminderFormTitle.textContent = "Create Reminder";
+            saveReminderBtn.textContent = "Save Reminder";
+            cancelEditBtn.style.display = "none";
+            reminderForm.reset();
+        }
+
+        function startEditReminder(reminder) {
+            editingReminderIdInput.value = reminder.reminder_id;
+            reminderTimeInput.value = toDateTimeLocalValue(reminder.reminder_time);
+            reminderMessageInput.value = reminder.reminder_message;
+            reminderFormTitle.textContent = "Edit Reminder";
+            saveReminderBtn.textContent = "Update Reminder";
+            cancelEditBtn.style.display = "block";
+            clearReminderStatus();
+            window.scrollTo({ top: 0, behavior: "smooth" });
         }
 
         async function loadSavedReminders() {
@@ -98,10 +139,58 @@
                 reminders.forEach(reminder => {
                     const card = document.createElement("div");
                     card.className = "saved-reminder-card";
+
+                    const actions = document.createElement("div");
+                    actions.className = "saved-reminder-actions";
+
+                    const editBtn = document.createElement("button");
+                    editBtn.type = "button";
+                    editBtn.className = "saved-reminder-btn edit";
+                    editBtn.textContent = "Edit";
+                    editBtn.addEventListener("click", () => startEditReminder(reminder));
+
+                    const deleteBtn = document.createElement("button");
+                    deleteBtn.type = "button";
+                    deleteBtn.className = "saved-reminder-btn delete";
+                    deleteBtn.textContent = "Delete";
+                    deleteBtn.addEventListener("click", async () => {
+                        const confirmed = confirm("Delete this reminder?");
+                        if (!confirmed) return;
+
+                        try {
+                            const response = await fetch(`/api/reminders/${reminder.reminder_id}`, {
+                                method: "DELETE",
+                                headers: {
+                                    "Content-Type": "application/json"
+                                }
+                            });
+
+                            const result = await response.json();
+
+                            if (result.success) {
+                                showReminderStatus("Reminder deleted successfully.");
+                                if (editingReminderIdInput.value === String(reminder.reminder_id)) {
+                                    resetReminderForm();
+                                }
+                                loadSavedReminders();
+                            } else {
+                                showReminderStatus(result.message || "Failed to delete reminder.", true);
+                            }
+                        } catch (error) {
+                            console.error(error);
+                            showReminderStatus("Could not delete reminder.", true);
+                        }
+                    });
+
+                    actions.appendChild(editBtn);
+                    actions.appendChild(deleteBtn);
+
                     card.innerHTML = `
                         <div><strong>Time:</strong> ${formatReminderDateTime(reminder.reminder_time)}</div>
                         <div style="margin-top: 8px;"><strong>Message:</strong> ${reminder.reminder_message}</div>
                     `;
+                    card.appendChild(actions);
+
                     savedReminderList.appendChild(card);
                 });
             } catch (error) {
@@ -139,12 +228,18 @@
                 return;
             }
 
+            const editingId = editingReminderIdInput.value;
+            const isEditing = editingId !== "";
+            const url = isEditing ? `/api/reminders/${editingId}` : "/api/reminders";
+            const method = isEditing ? "PUT" : "POST";
+
             try {
                 saveReminderBtn.disabled = true;
-                saveReminderBtn.textContent = "Saving...";
+                cancelEditBtn.disabled = true;
+                saveReminderBtn.textContent = isEditing ? "Updating..." : "Saving...";
 
-                const response = await fetch("/api/reminders", {
-                    method: "POST",
+                const response = await fetch(url, {
+                    method,
                     headers: {
                         "Content-Type": "application/json"
                     },
@@ -154,19 +249,25 @@
                 const result = await response.json();
 
                 if (result.success) {
-                    showReminderStatus("Reminder saved successfully.");
-                    reminderForm.reset();
+                    showReminderStatus(isEditing ? "Reminder updated successfully." : "Reminder saved successfully.");
+                    resetReminderForm();
                     loadSavedReminders();
                 } else {
                     showReminderStatus(result.message || "Failed to save reminder.", true);
                 }
             } catch (error) {
                 console.error(error);
-                showReminderStatus("Could not save reminder.", true);
+                showReminderStatus(isEditing ? "Could not update reminder." : "Could not save reminder.", true);
             } finally {
                 saveReminderBtn.disabled = false;
-                saveReminderBtn.textContent = "Save Reminder";
+                cancelEditBtn.disabled = false;
+                saveReminderBtn.textContent = editingReminderIdInput.value ? "Update Reminder" : "Save Reminder";
             }
+        });
+
+        cancelEditBtn.addEventListener("click", function () {
+            resetReminderForm();
+            clearReminderStatus();
         });
 
         loadSavedReminders();
