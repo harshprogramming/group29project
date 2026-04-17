@@ -20,6 +20,37 @@ class ReminderRepository
         return (int)$this->db->lastInsertId();
     }
 
+    public function findReminder(int $reminderId, int $userId): ?array
+    {
+        $stmt = $this->db->prepare("
+            SELECT reminder_id, user_id, reminder_time, reminder_message, created_at
+            FROM Reminder
+            WHERE reminder_id = ? AND user_id = ?
+        ");
+        $stmt->execute([$reminderId, $userId]);
+
+        $reminder = $stmt->fetch();
+        return $reminder ?: null;
+    }
+
+    public function updateReminder(int $reminderId, int $userId, array $data): bool
+    {
+        $stmt = $this->db->prepare("
+            UPDATE Reminder
+            SET reminder_time = ?, reminder_message = ?
+            WHERE reminder_id = ? AND user_id = ?
+        ");
+
+        $stmt->execute([
+            $data['reminder_time'],
+            $data['reminder_message'],
+            $reminderId,
+            $userId
+        ]);
+
+        return $stmt->rowCount() > 0;
+    }
+
     public function getDueReminders(int $userId): array
     {
         $stmt = $this->db->prepare("

@@ -43,7 +43,8 @@ body {
 .home-box h1,
 .summary-header h1,
 .notifications-page h1,
-.calendar-page h1 {
+.calendar-page h1,
+.profile-page h1 {
     font-family: 'Pacifico', cursive;
 }
 
@@ -112,7 +113,8 @@ button:hover {
     text-decoration: underline;
 }
 
-#message {
+#message,
+#profileMessage {
     text-align: center;
     margin-top: 15px;
     font-weight: bold;
@@ -197,11 +199,10 @@ button:hover {
     line-height: 1.6;
 }
 
+.user-icon,
 .notification-bell {
     position: absolute;
     top: 0;
-    right: 0;
-    transform: translate(-8px, 8px);
     width: 52px;
     height: 52px;
     border-radius: 50%;
@@ -217,10 +218,28 @@ button:hover {
     z-index: 10;
 }
 
+.user-icon {
+    left: 0;
+    transform: translate(8px, 8px);
+}
+
+.notification-bell {
+    right: 0;
+    transform: translate(-8px, 8px);
+}
+
+.user-icon:hover,
 .notification-bell:hover {
     background: #eef2ff;
-    transform: translate(-8px, 4px);
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.16);
+}
+
+.user-icon:hover {
+    transform: translate(8px, 4px);
+}
+
+.notification-bell:hover {
+    transform: translate(-8px, 4px);
 }
 
 /* Utility nav */
@@ -537,6 +556,84 @@ button:hover {
     font-weight: bold;
 }
 
+.saved-reminder-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.saved-reminder-btn {
+    width: auto;
+    padding: 10px 14px;
+    font-size: 14px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    color: white;
+}
+
+.saved-reminder-btn.edit {
+    background: #4f46e5;
+}
+
+.saved-reminder-btn.edit:hover {
+    background: #4338ca;
+}
+
+.saved-reminder-btn.delete {
+    background: #ef4444;
+}
+
+.saved-reminder-btn.delete:hover {
+    background: #dc2626;
+}
+
+/* Profile page */
+.profile-page {
+    background: white;
+    width: 700px;
+    max-width: 100%;
+    padding: 35px;
+    border-radius: 18px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.profile-page h1 {
+    color: #4f46e5;
+    margin-bottom: 12px;
+    text-align: center;
+}
+
+.profile-page p {
+    text-align: center;
+    color: #666;
+    margin-bottom: 22px;
+    line-height: 1.6;
+}
+
+.profile-icon-header {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+.profile-panel {
+    margin-top: 10px;
+    background: #fafafa;
+    border: 1px solid #ececec;
+    border-radius: 16px;
+    padding: 22px;
+}
+
+.delete-account-btn {
+    margin-top: 10px;
+    background: #ef4444;
+}
+
+.delete-account-btn:hover {
+    background: #dc2626;
+}
+
 /* Calendar page */
 .calendar-page {
     background: white;
@@ -690,6 +787,7 @@ button:hover {
 }
 
 .entry-card {
+    position: relative;
     background: #ffffff;
     border: 1px solid #e5e7eb;
     border-radius: 14px;
@@ -726,65 +824,6 @@ button:hover {
 
 .calendar-actions {
     margin-top: 22px;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .container-summary {
-        padding: 24px;
-    }
-
-    .summary-header h1 {
-        font-size: 1.6rem;
-    }
-
-    .top-activities-grid,
-    .recommendation-grid,
-    .home-nav-grid,
-    .entry-columns {
-        grid-template-columns: 1fr;
-    }
-
-    .logout-btn {
-        grid-column: auto;
-    }
-
-    .nav-buttons {
-        flex-direction: column;
-    }
-
-    .calendar-page {
-        padding: 22px;
-    }
-
-    .calendar-grid {
-        gap: 8px;
-    }
-
-    .calendar-day {
-        min-height: 72px;
-        padding: 8px;
-    }
-
-    .calendar-toolbar {
-        flex-direction: column;
-    }
-
-    .calendar-toolbar-buttons {
-        width: 100%;
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-
-    .notification-bell {
-        top: -8px;
-        right: -4px;
-        width: 48px;
-        height: 48px;
-        font-size: 1.35rem;
-    }
-.entry-card {
-    position: relative;
 }
 
 .entry-card-actions {
@@ -903,11 +942,6 @@ button:hover {
     line-height: 1.5;
 }
 
-@media (max-width: 768px) {
-    .insight-grid {
-        grid-template-columns: 1fr;
-    }
-}
 /* Best Mood-Improving Activities cards */
 #moodBoostingActivities {
     display: grid;
@@ -1049,12 +1083,6 @@ button:hover {
     padding: 10px 12px;
 }
 
-@media (max-width: 768px) {
-    #moodBoostingActivities {
-        grid-template-columns: 1fr;
-    }
-}
-
 #searchEmotionBtn,
 #searchActivityBtn {
     margin-top: 4px;
@@ -1065,4 +1093,73 @@ button:hover {
     display: grid;
     gap: 12px;
 }
+
+/* Responsive */
+@media (max-width: 768px) {
+    .container-summary {
+        padding: 24px;
+    }
+
+    .summary-header h1 {
+        font-size: 1.6rem;
+    }
+
+    .top-activities-grid,
+    .recommendation-grid,
+    .home-nav-grid,
+    .entry-columns,
+    .insight-grid,
+    #moodBoostingActivities {
+        grid-template-columns: 1fr;
+    }
+
+    .logout-btn {
+        grid-column: auto;
+    }
+
+    .nav-buttons {
+        flex-direction: column;
+    }
+
+    .calendar-page,
+    .notifications-page,
+    .profile-page,
+    .home-box {
+        padding: 22px;
+    }
+
+    .calendar-grid {
+        gap: 8px;
+    }
+
+    .calendar-day {
+        min-height: 72px;
+        padding: 8px;
+    }
+
+    .calendar-toolbar {
+        flex-direction: column;
+    }
+
+    .calendar-toolbar-buttons {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .notification-bell {
+        top: -8px;
+        right: -4px;
+        width: 48px;
+        height: 48px;
+        font-size: 1.35rem;
+    }
+
+    .user-icon {
+        top: -8px;
+        left: -4px;
+        width: 48px;
+        height: 48px;
+        font-size: 1.35rem;
+    }
 }

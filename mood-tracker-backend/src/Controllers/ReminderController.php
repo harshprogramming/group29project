@@ -34,6 +34,34 @@ class ReminderController
         Response::success(['reminders' => $reminders], 'Due reminders fetched');
     }
 
+    public function update($id): void
+    {
+        $data = Request::body();
+
+        $errors = validate_required($data, ['reminder_time', 'reminder_message']);
+
+        if (!empty($errors)) {
+            Response::error('Validation failed', 422, $errors);
+        }
+
+        $updated = $this->reminderRepository->updateReminder(
+            (int)$id,
+            current_user_id(),
+            [
+                'reminder_time' => $data['reminder_time'],
+                'reminder_message' => trim($data['reminder_message']),
+            ]
+        );
+
+        if (!$updated) {
+            Response::error('Reminder not found or not updated', 404);
+        }
+
+        $reminder = $this->reminderRepository->findReminder((int)$id, current_user_id());
+
+        Response::success(['reminder' => $reminder], 'Reminder updated');
+    }
+
     public function destroy($id): void
     {
         $deleted = $this->reminderRepository->deleteReminder((int)$id, current_user_id());
